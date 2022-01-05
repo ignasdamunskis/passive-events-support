@@ -90,7 +90,7 @@ In case you want to customize this behaviour, you will need to pass an array of 
 ```js
 import { passiveSupported, passiveSupport } from 'passive-events-support/src/utils'
 
-window.passiveSupported = passiveSupported()
+window.passiveSupported = passiveSupported() // optional
 passiveSupport({
   jquery: true
   events: ['touchstart', 'touchmove']
