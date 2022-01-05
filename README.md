@@ -80,11 +80,16 @@ By default, importing this package will automatically resolve the issue. The `pa
 | Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
 | Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
 
-It is recommended to customize and only pass the events that seems to trigger the warning. See the section below.
-
 ## Customization
 
-In case you want to customize the event list, you will need to pass an array of events manually:
+It is recommended to customize and only pass the events that seems to trigger the warning.
+Passing just the necessary events will decrease the possibility of incompatibility.
+Some real life scenarios:
+
+- For **Materialize CSS** just `touchstart`, `touchmove` and `touchend` were needed. It worked fine with all the default events too.
+- For **jQuery** just `mousewheel` was needed. It did break when using all the default events instead of just `mousewheel`.
+
+To customize the event list, you will need to pass an array of events manually:
 
 ```js
 import { passiveSupport } from 'passive-events-support/src/utils'
@@ -97,4 +102,12 @@ passiveSupport(['touchstart', 'touchmove'])
   window.passiveEvents = ['touchstart', 'touchmove']
 </script>
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
+```
+
+If you want to add `passive` option manually to a certain event listener, use `passiveSupported()` helper to find out if `passive` option is even supported by your browser:
+
+```js
+import { passiveSupported } from 'passive-events-support/src/utils'
+
+element.addEventListener('touchstart', handler, passiveSupported() ? { passive: true } : false)
 ```
