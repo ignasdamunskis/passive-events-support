@@ -80,6 +80,8 @@ By default, importing this package will automatically resolve the issue. The `pa
 | Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
 | Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
 
+It is recommended to customize and only pass the events that seems to trigger the warning. See the section below.
+
 ## Customization
 
 In case you want to customize the event list, you will need to pass an array of events manually:
