@@ -4,17 +4,18 @@ Make sure to import this script before any package or your code that is causing 
 
 ### How it works
 #### When event listener does not have a passive option, it will be added depending on if event listener is calling preventDefault() or not
-###### When event listener is not calling `preventDefault()`
-It will add a `passive: true` option:
+
+- When event listener is not calling `preventDefault()` and `passive` option is not passed, it will add a `passive: true`:
 ```
-element.addEventListener(event, (e) => {})
-// Becomes
-element.addEventListener(event, (e) => {}, { passive: true })
+element.addEventListener(event, (e) => {}) // Before
+element.addEventListener(event, (e) => {}, { passive: true }) // After
 ```
 
-###### When event listener is calling preventDefault():
-element.addEventListener(event, (e) => { e.preventDefault() })
-element.addEventListener(event, (e) => { e.preventDefault() }, { passive: false })
+- When event listener is calling `preventDefault()` and `passive` option is not passed, it will add a `passive: false`:
+```
+element.addEventListener(event, (e) => { e.preventDefault() }) // Before
+element.addEventListener(event, (e) => { e.preventDefault() }, { passive: false }) // After
+```
 
 ###### When other options are passed, they will not be modified or removed
 element.addEventListener(event, (e) => {}, { capture: true })
