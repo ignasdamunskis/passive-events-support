@@ -1,9 +1,4 @@
-import { supportPassive } from './utils'
+import { passiveSupported, passiveSupport } from './utils'
 
-const options = {
-  vanilla: true,
-  jquery: false,
-  ...(window.passiveSupportOptions || {})
-}
-
-supportPassive(options)
+window.passiveSupported = passiveSupported()
+passiveSupport(window.passiveSupportOptions || {})
