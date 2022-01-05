@@ -1,7 +1,9 @@
 # passive-events-support
 
-##### When event listener does not have a passive option
-It will be automatically added depending if event lsitener is prevented or not
+### How it works
+
+#### When event listener does not have a passive option
+It will be automatically added depending if event listener is prevented or not
 ###### When event listener is not prevented
 element.addEventListener(event, (e) => {})
 element.addEventListener(event, (e) => {}, { passive: true })
