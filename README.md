@@ -3,24 +3,24 @@
 Make sure to import this script before any package or your code that is causing such warning.
 
 ### How it works
-#### When event listener does not have a passive option, it will be added depending on if event listener is calling preventDefault() or not
+When event listener does not have a `passive` option, it will be added and its' value will depend on if event listener is calling preventDefault() or not.
 
-- When event listener is not calling `preventDefault()` and `passive` option is not passed, it will add a `passive: true`:
-```
+#### When event listener is not calling `preventDefault()` and `passive` option is not passed, it will add a `{ passive: true }`
+```js
 element.addEventListener('touchstart', (e) => {}) // { passive: true }
 ```
 
-- When event listener is calling `preventDefault()` and `passive` option is not passed, it will add a `passive: false`:
-```
+#### When event listener is calling `preventDefault()` and `passive` option is not passed, it will add a `{ passive: false }`
+```js
 element.addEventListener('touchstart', (e) => { e.preventDefault() }) // { passive: false }
 ```
 
-- When other options are passed, they will not be modified or removed
-```
+#### It will not modify or remove other event listener options
+```js
 element.addEventListener(event, (e) => {}, { capture: true }) // { capture: true, passive: true }
 ```
 
-- When passive option is passed, it will not be modified
-```
+#### It will not modify passed 
+```js
 element.addEventListener(event, (e) => {}, { passive: false }) // { passive: false }
 ```
