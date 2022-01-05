@@ -1,8 +1,11 @@
 # passive-events-support
 
+Make sure to import this script before any package or your code that is causing such warning.
+
 ### How it works
 #### When event listener does not have a passive option, it will be added depending on if event listener is calling preventDefault() or not
-###### When event listener is not calling preventDefault():
+###### When event listener is not calling `preventDefault()`
+It will add a `passive: true` option:
 ```
 element.addEventListener(event, (e) => {})
 // Becomes
