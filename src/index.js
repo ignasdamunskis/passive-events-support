@@ -1,4 +1,4 @@
 import { passiveSupported, passiveSupport } from './utils'
 
 window.passiveSupported = passiveSupported()
-passiveSupport(window.passiveSupportOptions || {})
+passiveSupport(window.passiveEvents)

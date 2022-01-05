@@ -72,48 +72,27 @@ With this code the default behaviour will be applied, `passive` option will be a
 
 ## Default behaviour
 
-By default, importing this package will fix the issue just for `Vanilla JS` and not `jQuery`, and `passive` option will be assigned to these events:
-- Scroll: `scroll`, `wheel`
-- Touch: `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave`
-- Mouse: `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover`
+By default, importing this package will automatically resolve the issue. The `passive` option will be assigned to these events:
 
-| Option | Description | Type | Default |
-| --- | --- | --- | --- |
-| vanilla | Whether `passive` option should be applied to `Vanilla JS` event listeners | `boolean` | `true` |
-| jquery | Whether `passive` option should be applied to `jQuery` event listeners | `boolean` | `false` |
-| events | Events that should have `passive` option | `array` | See the list above |
+| Type | Events |
+| --- | --- |
+| Scroll | `scroll`, `wheel` |
+| Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
+| Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
 
 ## Customization
 
-In case you want to customize this behaviour, you will need to pass an array of custom parameters:
+In case you want to customize the event list, you will need to pass an array of events manually:
 
 ```js
-import { passiveSupported, passiveSupport } from 'passive-events-support/src/utils'
+import { passiveSupport } from 'passive-events-support/src/utils'
 
-window.passiveSupported = passiveSupported() // optional
-passiveSupport({
-  jquery: true
-  events: ['touchstart', 'touchmove']
-})
+passiveSupport(['touchstart', 'touchmove'])
 ```
 
 ```html
 <script>
-  window.passiveSupportOptions = {
-    jquery: true
-    events: ['touchstart', 'touchmove']
-  }
+  window.passiveEvents = ['touchstart', 'touchmove']
 </script>
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
-```
-
-By default, when `jquery` option is set to `true`, the fix is applied to `$` and `jQuery` global instances. In case it is different in your project, you can specify it:
-
-```js
-import { /*... ,*/ passiveSupportJQuery } from 'passive-events-support/src/utils'
-
-// ...
-// pass the same event list as previously
-// default list applied otherwise 
-passiveSupportJQuery(jQueryInstance, events)
 ```
