@@ -7,14 +7,12 @@ Make sure to import this script before any package or your code that is causing 
 
 - When event listener is not calling `preventDefault()` and `passive` option is not passed, it will add a `passive: true`:
 ```
-element.addEventListener(event, (e) => {}) // Before
-element.addEventListener(event, (e) => {}, { passive: true }) // After
+element.addEventListener('touchstart', (e) => {}) // { passive: true }
 ```
 
 - When event listener is calling `preventDefault()` and `passive` option is not passed, it will add a `passive: false`:
 ```
-element.addEventListener(event, (e) => { e.preventDefault() }) // Before
-element.addEventListener(event, (e) => { e.preventDefault() }, { passive: false }) // After
+element.addEventListener('touchstart', (e) => { e.preventDefault() }) // { passive: false }
 ```
 
 ###### When other options are passed, they will not be modified or removed
