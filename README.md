@@ -52,7 +52,7 @@ yarn add passive-events-support
 
 ## Usage
 
-This package must be imported before any package or code that is causing an issue or Lighthouse warning
+This package must be imported before any package or code that is causing an issue or Lighthouse warning.
 
 ### JS
 
@@ -67,6 +67,8 @@ import 'passive-events-support'
 ```html
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
+
+With this code the default behaviour will be applied, `passive` option will be added automatically to all the listeners defined after the import.
 
 ## Default behaviour
 
