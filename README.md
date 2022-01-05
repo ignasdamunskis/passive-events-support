@@ -14,12 +14,11 @@ Or when running **Lighthouse** you get a lower score with a message:
 
 With many bad practice advices online, it is frustrating to find a proper solution that does not only hide the warnings, but also improves scrolling performance.
 
-Common issues:
-- Modifying 3rd party source code is a bad practice and you are just and one package update away from losing the changes.
-- Assigning `passive: false` will hide the warning, but will not improve the performance. What's the point?
-- Assigning `passive: true` to all the event listeners or using package such as `default-passive-events` will throw an error whenever `preventDefault()` is used.
+Common suggestion is to modify 3rd party source code and assign `passive` option manually. Despite the fact that you should never modify 3rd party source code, searching event listeners and assigning certain `passive` value depending on `preventDefault()` usage is a time consuming experience.
 
-This is the package that will not only solve the issue, but also improve the performance.
+Another suggestion is to apply `passive: false` to all the event listeners that cause the warning. The warning will be gone, but the performance will not be improved whatsoever. What's the point then? On the other side, blindly assigning `passive: true` to all the event listeners manually or with a package such as `default-passive-events` will lead you to nothing else but errors in case of `preventDefault()` usage.
+
+Here comes **Passive Events Support**. This is the package that will not only solve the issue, but also improve the performance.
 
 ## How it works
 
