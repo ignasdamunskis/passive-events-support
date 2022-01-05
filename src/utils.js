@@ -39,8 +39,6 @@ export function passiveSupport(customOptions) {
         }
       }
 
-      console.log('updated', args)
-
       originalFn.call(this, ...args)
     }
   }
