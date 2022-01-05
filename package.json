@@ -1,0 +1,21 @@
+{
+  "name": "passive-events-support",
+  "version": "1.0.0",
+  "description": "Passive Events Support",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": "git+https://github.com/ignasdamunskis/passive-events-support.git",
+  "author": "Ignas Damunskis <ignas.damunskis@esl-asia.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ignasdamunskis/passive-events-support/issues"
+  },
+  "homepage": "https://github.com/ignasdamunskis/passive-events-support#readme",
+  "devDependencies": {
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  }
+}
