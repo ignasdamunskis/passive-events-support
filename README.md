@@ -15,10 +15,12 @@ element.addEventListener('touchstart', (e) => {}) // { passive: true }
 element.addEventListener('touchstart', (e) => { e.preventDefault() }) // { passive: false }
 ```
 
-###### When other options are passed, they will not be modified or removed
-element.addEventListener(event, (e) => {}, { capture: true })
-element.addEventListener(event, (e) => {}, { capture: true, passive: true })
+- When other options are passed, they will not be modified or removed
+```
+element.addEventListener(event, (e) => {}, { capture: true }) // { capture: true, passive: true }
+```
 
-###### When passive option is passed, it will not be modified
-element.addEventListener(event, (e) => {}, { passive: false })
-element.addEventListener(event, (e) => {}, { passive: false })
+- When passive option is passed, it will not be modified
+```
+element.addEventListener(event, (e) => {}, { passive: false }) // { passive: false }
+```
