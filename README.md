@@ -21,10 +21,47 @@ import 'passive-events-support'
 ### HTML
 
 ```html
-<script type="text/javascript" src="node_modules/default-passive-events/dist/index.js"></script>
+<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-### How it works
+## Default behaviour
+
+By default, importing this package will fix the issue just for `Vanilla JS` and not `jQuery`, and `passive` option will be assigned to these events:
+- Scroll: `scroll`, `wheel`
+- Touch: `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave`
+- Mouse: `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover`
+
+| Option | Description | Type | Default |
+| --- | --- | --- | --- |
+| vanilla | Whether `passive` option should be applied to `Vanilla JS` event listeners | `boolean` | `true` |
+| jquery | Whether `passive` option should be applied to `jQuery` event listeners | `boolean` | `false` |
+| events | Events that should have `passive` option | `array` | See the list above |
+
+## Customization
+
+In case you want to customize this behaviour, you will need to pass an array of custom parameters:
+
+```js
+import { passiveSupport } from 'passive-events-support/src/utils'
+
+passiveSupport({
+  jquery: true
+  events: ['touchstart', 'touchmove']
+})
+```
+
+```html
+<script>
+  window.passiveSupportOptions = {
+    vanilla: false, // default: true
+    jquery: true, // default: false
+    events: ['touchstart', 'touchmove'] // default: the list above
+  }
+</script>
+<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
+```
+
+## How it works
 
 When event listener does not have a `passive` option, it will be added and its' value will depend on whether `preventDefault()` is called or not.
 
@@ -47,7 +84,7 @@ element.addEventListener('touchstart', handler, { capture: true) // { capture: t
 element.addEventListener('touchstart', handler, { capture: false, passive: false }) // { capture: false, passive: false }
 ```
 
-### Forcing a certain value
+## Forcing a certain value
 
 As mentioned above in the **How it works** section, you can force specific `passive` value and it will not be overwritten by this package
 ```js
