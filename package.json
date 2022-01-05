@@ -8,7 +8,7 @@
     "build": "webpack"
   },
   "repository": "git+https://github.com/ignasdamunskis/passive-events-support.git",
-  "author": "Ignas Damunskis <ignas.damunskis@esl-asia.com>",
+  "author": "Ignas Damunskis <ignas3run@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ignasdamunskis/passive-events-support/issues"
