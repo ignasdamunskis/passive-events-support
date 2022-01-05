@@ -37,9 +37,19 @@ export function passiveSupport(customEvents = null) {
 
   EventTarget.prototype.addEventListener = function(...args) {
     if (events.includes(args[0]) && (!args[2] || args[2].passive === undefined)) {
+      const fn = args[1].toString()
+      const [fnDeclaration, ...fnContents] = fn.split('{')
+      const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
+      const fnContent = fnContents.join('{')
+      const fnEvent = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
+      const fnPrevented = !!(fnEvent && (
+        fnContent.includes('preventDefault()') ||
+        fnContent.includes(`(${fnEvent})`)
+      ))
+
       args[2] = {
         ...(args[2] || {}),
-        ...(passiveSupported() && { passive: !args[1].toString().includes('preventDefault') })
+        ...(passiveSupported() && { passive: !fnPrevented })
       }
     }
 
