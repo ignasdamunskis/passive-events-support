@@ -68,10 +68,6 @@ import 'passive-events-support'
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-With this code the default behaviour will be applied, `passive` option will be added automatically to all the listeners defined after the import.
-
-## Default behaviour
-
 By default, importing this package will automatically resolve the issue. The `passive` option will be assigned to these events:
 
 | Type | Events |
@@ -80,13 +76,13 @@ By default, importing this package will automatically resolve the issue. The `pa
 | Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
 | Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
 
+> **Warning!** It is highly recommended to pass only the events that cause the issue to decrease the possibility of incompatibility. See the section below...
+
 ## Customization
 
-It is recommended to customize and only pass the events that seems to trigger the warning.
-Passing just the necessary events will decrease the possibility of incompatibility.
-Some real life scenarios:
+It is recommended to customize and only pass the events that seems to trigger the warning. Sometimes the default installation might cause an issue for listeners that calls `preventDefault()` way too deep in the handler. i.e. handler calls the function that calls another function where only there `preventDefault()` is called... Some real life scenarios:
 
-- For **Materialize CSS** just `touchstart`, `touchmove` and `touchend` were needed. It worked fine with all the default events too.
+- For **Materialize CSS** just `touchstart`, `touchmove` and `touchend` were needed. It worked fine with all the default events tho.
 - For **jQuery** just `mousewheel` was needed. It did break when using all the default events instead of just `mousewheel`.
 
 To customize the event list, you will need to pass an array of events manually:
