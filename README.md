@@ -83,19 +83,19 @@ By default, importing this package will automatically resolve the issue. The `pa
 It is recommended to customize and only pass the events that seems to trigger the warning. Sometimes the default installation might cause an issue for listeners that calls `preventDefault()` way too deep in the handler. i.e. handler calls the function that calls another function where only there `preventDefault()` is called... Some real life scenarios:
 
 - For **Materialize CSS** just `touchstart`, `touchmove` and `touchend` were needed. It worked fine with all the default events tho.
-- For **jQuery** just `mousewheel` was needed. It did break when using all the default events instead of just `mousewheel`.
+- For **jQuery** just `touchstart`, `touchmove` and `mousewheel` was needed. It did break when using all the default events instead of these 3.
 
 To customize the event list, you will need to pass an array of events manually:
 
 ```js
 import { passiveSupport } from 'passive-events-support/src/utils'
 
-passiveSupport(['touchstart', 'touchmove'])
+passiveSupport(['touchstart', 'touchmove', 'mousewheel'])
 ```
 
 ```html
 <script>
-  window.passiveEvents = ['touchstart', 'touchmove']
+  window.passiveEvents = ['touchstart', 'touchmove', 'mousewheel']
 </script>
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
