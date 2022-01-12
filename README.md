@@ -110,7 +110,7 @@ passiveSupport({
 | Option | Description | Type | Default |
 | --- | --- | --- | --- |
 | `debug` | This will log the event listeners updated by this package. | `boolean` | `false` |
-| `events` | The list of events whose listeners will have a `passive` option assigned. | `array` | See the list above. |
+| `events` | The list of events whose listeners will have a `passive` option assigned. | `array` | See the **Usage** section above |
 | `preventedListeners` | The list of prevented event listeners without `passive` option. Here `passive: false` will be applied. | `array` | `[]` |
 
 ## An Example

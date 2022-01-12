@@ -61,7 +61,7 @@ export function passiveSupport(custom) {
       const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
       const fnContent = fnContents.join('{')
       const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
-      const fnPrevented = !!(preventedListeners.find(({ element, event }) => this.match(element) && event === args[0]) || fnContent.includes('preventDefault'))
+      const fnPrevented = !!(preventedListeners.find(({ element, event }) => this.matches(element) && event === args[0]) || fnContent.includes('preventDefault'))
 
       args[2] = {
         ...(args[2] || {}),
