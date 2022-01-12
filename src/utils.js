@@ -69,6 +69,7 @@ export function passiveSupport(customEvents = null, debug = false) {
 
       if (debug) {
         console.info('[Passive Events Support] Updated Event Listeners', {
+          element: this,
           event: args[0],
           handler: { fnArgument, fnContent, fnPrevented },
           oldArguments,
