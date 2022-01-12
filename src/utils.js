@@ -46,7 +46,7 @@ export function passiveSupport(custom) {
   }
 
   if (options.debug) {
-    console.info('[Passive Events Support] Configurations', options)
+    console.info('[Passive Events Support] Initialized', options)
   }
 
   const { events, preventedListeners, debug } = options
@@ -56,27 +56,12 @@ export function passiveSupport(custom) {
     const oldArguments = args[2];
 
     if (events.includes(args[0]) && (!args[2] || args[2].passive === undefined)) {
-      let fnPrevented = true
-
-      if (!preventedListeners.find(({ element, event }) => this.match(element) && event === args[0])) {
-        const fn = args[1].toString()
-        const [fnDeclaration, ...fnContents] = fn.split('{')
-        const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
-        const fnContent = fnContents.join('{')
-        const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
-
-        fnPrevented = !!(fnArgument && (
-          // if event itself is preventing
-          fnContent.includes('preventDefault') ||
-          // if event is passed to other method
-          fnContent.includes(`(${fnArgument})`) ||
-          fnContent.includes(`(${fnArgument},`) ||
-          fnContent.includes(`,${fnArgument})`) ||
-          fnContent.includes(`, ${fnArgument})`) ||
-          fnContent.includes(`,${fnArgument},`) ||
-          fnContent.includes(`, ${fnArgument},`)
-        ))
-      }
+      const fn = args[1].toString()
+      const [fnDeclaration, ...fnContents] = fn.split('{')
+      const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
+      const fnContent = fnContents.join('{')
+      const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
+      const fnPrevented = !!(preventedListeners.find(({ element, event }) => this.match(element) && event === args[0]) || fnContent.includes('preventDefault'))
 
       args[2] = {
         ...(args[2] || {}),
