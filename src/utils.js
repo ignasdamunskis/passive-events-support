@@ -21,46 +21,62 @@ export function passiveSupported(debug = false) {
   return passiveSupported
 }
 
-export function passiveSupport(customEvents = null, debug = false) {
-  const events = customEvents || [
-    'scroll',
-    'wheel',
-    'touchstart',
-    'touchmove',
-    'touchenter',
-    'touchend',
-    'touchleave',
-    'mouseout',
-    'mouseleave',
-    'mouseup',
-    'mousedown',
-    'mousemove',
-    'mouseenter',
-    'mousewheel',
-    'mouseover'
-  ]
+export function passiveSupport(custom) {
+  const options = {
+    events: [
+      'scroll',
+      'wheel',
+      'touchstart',
+      'touchmove',
+      'touchenter',
+      'touchend',
+      'touchleave',
+      'mouseout',
+      'mouseleave',
+      'mouseup',
+      'mousedown',
+      'mousemove',
+      'mouseenter',
+      'mousewheel',
+      'mouseover'
+    ],
+    preventedListeners: [],
+    debug: false,
+    ...custom
+  }
+
+  if (options.debug) {
+    console.info('[Passive Events Support] Configurations', options)
+  }
+
+  const { events, preventedListeners, debug } = options
   const originalFn = EventTarget.prototype.addEventListener
 
   EventTarget.prototype.addEventListener = function(...args) {
     const oldArguments = args[2];
 
     if (events.includes(args[0]) && (!args[2] || args[2].passive === undefined)) {
-      const fn = args[1].toString()
-      const [fnDeclaration, ...fnContents] = fn.split('{')
-      const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
-      const fnContent = fnContents.join('{')
-      const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
-      const fnPrevented = !!(fnArgument && (
-        // if event itself is preventing
-        fnContent.includes('preventDefault') ||
-        // if event is passed to other method
-        fnContent.includes(`(${fnArgument})`) ||
-        fnContent.includes(`(${fnArgument},`) ||
-        fnContent.includes(`,${fnArgument})`) ||
-        fnContent.includes(`, ${fnArgument})`) ||
-        fnContent.includes(`,${fnArgument},`) ||
-        fnContent.includes(`, ${fnArgument},`)
-      ))
+      let fnPrevented = true
+
+      if (!preventedListeners.find(({ element, event }) => this.match(element) && event === args[0])) {
+        const fn = args[1].toString()
+        const [fnDeclaration, ...fnContents] = fn.split('{')
+        const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
+        const fnContent = fnContents.join('{')
+        const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
+
+        fnPrevented = !!(fnArgument && (
+          // if event itself is preventing
+          fnContent.includes('preventDefault') ||
+          // if event is passed to other method
+          fnContent.includes(`(${fnArgument})`) ||
+          fnContent.includes(`(${fnArgument},`) ||
+          fnContent.includes(`,${fnArgument})`) ||
+          fnContent.includes(`, ${fnArgument})`) ||
+          fnContent.includes(`,${fnArgument},`) ||
+          fnContent.includes(`, ${fnArgument},`)
+        ))
+      }
 
       args[2] = {
         ...(args[2] || {}),
