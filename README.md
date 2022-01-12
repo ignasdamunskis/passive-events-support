@@ -85,6 +85,8 @@ It is recommended to customize and only pass the events that seems to trigger th
 - For **Materialize CSS** just `touchstart`, `touchmove` and `touchend` were needed. It worked fine with all the default events tho.
 - For **jQuery** just `touchstart`, `touchmove` and `mousewheel` was needed. It did break when using all the default events instead of these 3.
 
+> Unable to preventDefault inside passive event listener invocation.
+
 To customize the event list, you will need to pass an array of events manually:
 
 ```js
@@ -98,6 +100,16 @@ passiveSupport(['touchstart', 'touchmove', 'mousewheel'])
   window.passiveEvents = ['touchstart', 'touchmove', 'mousewheel']
 </script>
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
+```
+
+If you want to debug which event listeners are being updated, pass second argument after event list:
+
+```js
+import { passiveSupport } from 'passive-events-support/src/utils'
+
+$events = null // will use default list when null passed
+$debug = true // will console log updated event listeners
+passiveSupport($events, $debug)
 ```
 
 If you want to add `passive` option manually to a certain event listener, use `passiveSupported()` helper to find out if `passive` option is even supported by your browser:
