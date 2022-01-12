@@ -71,7 +71,12 @@ export function passiveSupport(customEvents = null, debug = false) {
         console.info('[Passive Events Support] Updated Event Listeners', {
           element: this,
           event: args[0],
-          handler: { fnArgument, fnContent, fnPrevented },
+          handler: {
+            fn: args[1],
+            fnArgument,
+            fnContent,
+            fnPrevented
+          },
           oldArguments,
           updatedArguments: args[2]
         })
