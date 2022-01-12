@@ -85,8 +85,6 @@ It is recommended to customize and only pass the events that seems to trigger th
 - For **Materialize CSS** just `touchstart`, `touchmove` and `touchend` were needed. It worked fine with all the default events tho.
 - For **jQuery** just `touchstart`, `touchmove` and `mousewheel` was needed. It did break when using all the default events instead of these 3.
 
-> Unable to preventDefault inside passive event listener invocation.
-
 To customize the event list, you will need to pass an array of events manually:
 
 ```js
@@ -112,7 +110,15 @@ $debug = true // will console log updated event listeners
 passiveSupport($events, $debug)
 ```
 
-If you want to add `passive` option manually to a certain event listener, use `passiveSupported()` helper to find out if `passive` option is even supported by your browser:
+## Known Issues
+
+If this package breaks any component upon interaction, or you get such error like:
+
+> Unable to preventDefault inside passive event listener invocation.
+
+Enable debugging as shown in the **Customization** section and find out which event is failing so you could remove it from the event list provided to `passiveSupport()`.
+
+In case you want to add `passive` option manually to a certain event listener, use `passiveSupported($debug = false)` helper to find out if `passive` option is even supported by your browser:
 
 ```js
 import { passiveSupported } from 'passive-events-support/src/utils'
