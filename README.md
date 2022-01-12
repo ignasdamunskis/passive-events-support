@@ -102,7 +102,7 @@ passiveSupport(['touchstart', 'touchmove', 'mousewheel'])
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-If you want to debug which event listeners are being updated, pass second argument after event list:
+If you want to debug which event listeners are being updated, pass `true` as the second argument after the event list:
 
 ```js
 import { passiveSupport } from 'passive-events-support/src/utils'
