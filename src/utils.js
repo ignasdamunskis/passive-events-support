@@ -43,7 +43,9 @@ export function passiveSupport(customEvents = null) {
       const fnContent = fnContents.join('{')
       const fnEvent = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
       const fnPrevented = !!(fnEvent && (
+        // if event itself is preventing
         fnContent.includes('preventDefault') ||
+        // if event is passed to other method
         fnContent.includes(`(${fnEvent})`) ||
         fnContent.includes(`(${fnEvent},`) ||
         fnContent.includes(`,${fnEvent})`) ||
