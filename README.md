@@ -2,7 +2,7 @@
 
 ## Introduction
 
-How many times have you yourself forgotten to make an event listener as `passive`, or installed a library such as **Bootstrap**, **jQuery** or **Materialize** and suddenly in the **Google Chrome** console you're prompted a warning:
+How many times have you yourself forgotten to make an event listener as `passive`, or installed a library such as **Bootstrap**, **jQuery** or **Materialize** and suddenly in the **Google Chrome** you're prompted with a:
 
 > **[Violation]** Added non-passive event listener to a scroll-blocking `'touchstart'` event. Consider marking event handler as `passive` to make the page more responsive.
 
@@ -52,9 +52,7 @@ This package must be imported before any package or code that is causing an issu
 
 ```js
 // With JS
-import 'passive-events-support'
-// or
-require 'passive-events-support'
+import 'passive-events-support' // or require
 ```
 
 ```html
@@ -62,7 +60,9 @@ require 'passive-events-support'
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-By default, importing this package will automatically make all the event listeners, for the events listed below, as passive.
+By default, importing this package will automatically add the `passive` options to all the event listeners defined afterwards.
+
+### Default event list:
 
 | Type | Events |
 | --- | --- |
@@ -72,71 +72,54 @@ By default, importing this package will automatically make all the event listene
 
 While on small projects with no dependencies the default import might work like a charm, on a project with loaded 3rd parties, like **jQuery**, it might not work and cause some of the event listeners break. See the exact issues and how to fix it in the sections below.
 
-## Know Issues
+## Known Issue
 
-This package with its' default behaviour will check if `preventDefault()` is being called by the handler itself and make listener as passive if not. But what happens if the handler calls another method and only that method calls the `preventDefault()`? This event listener will break prompting an error message:
+This package with its' default behaviour will check if `preventDefault()` is being called by the handler itself and make listener as passive if not. The issue appear when `preventDefault()` is not being called from the handler itself, but rather from methods called by the handler. This will cause the event listener to break prompting an error message:
 
 > Unable to preventDefault inside passive event listener invocation.
 
-But don't worry! This can be debugged and easilly fixed by just configuring the package! See the **Customization** section below...
+**But don't worry!** This can be debugged and easilly fixed by just configuring the package! See the **Customization** section below.
 
 ## Customization
 
 It is highly recommended to customize and only pass the custom list of events, that seems to trigger the warning, and custom list of prevented event listeners, that should not be marked as passive.
-
-But, how do I know which event listeners should I make as passive?
-
-### 1. Debugging
-
-If you want to debug which event listeners are being updated, pass `true` as the second argument after the event list:
-
-```js
-// With JS
-import { passiveSupport } from 'passive-events-support/src/utils'
-passiveSupport({ debug: true })
-```
-
-```html
-<!-- With HTML -->
-<script>
-  window.passiveDebug = true // will console log updated event listeners
-</script>
-<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
-```
-
-### 2. Custom events
-
-**Real life scenario:**
-when using **Materialize**, even tho it works fine with the default event list, just `touchstart` and `touchmove` events are being used by **Materialize** to define non-passive event listeners.
-
-The solution would be to manually pass a custom event list:
-
-```js
-// With JS
-import { passiveSupport } from 'passive-events-support/src/utils'
-passiveSupport({ events: ['touchstart', 'touchmove'] })
-```
-
-```html
-<!-- With HTML -->
-<script>
-  window.passiveEvents = ['touchstart', 'touchmove']
-</script>
-<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
-```
-
-### 3. Prevented event listeners
-
-**Real life scenario:**
-when using **jQuery** and **Select2** just `touchstart`, `touchmove` and `mousewheel` are being used to define non-passive event listeners. The `touchstart` event by **Select2** is used to define an event listener that actually does `preventDefault()`, but is not caught by default configuration, so the event listener is incorrectly being marked as passive causing the select element to break...
-
-To fix this issue we can manually pass the list of event listeners that should never be marked as passive:
+You can simply do that by passing parameters inside the object:
 
 ```js
 // With JS
 import { passiveSupport } from 'passive-events-support/src/utils'
 passiveSupport({
-  events: ['touchstart', 'touchmove', 'mousewheel'],
+  debug: false,
+  events: [/*...*/],
+  preventedListeners: []
+})
+```
+
+```html
+<!-- With HTML -->
+<script>
+  window.passiveSupport = {
+    debug: false,
+    events: [/*...*/],
+    preventedListeners: []
+  }
+</script>
+<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
+```
+
+| Option | Description | Type | Default |
+| --- | --- | --- | --- |
+| `debug` | This will log the event listeners updated by this package. | `boolean` | `false` |
+| `events` | The list of events whose listeners will have a `passive` option assigned. | `array` | See the list above. |
+| `preventedListeners` | The list of prevented event listeners without `passive` option. Here `passive: false` will be applied. | `array` | `[]` |
+
+## An Example
+
+```js
+// With JS
+import { passiveSupport } from 'passive-events-support/src/utils'
+passiveSupport({
+  events: ['touchstart', 'touchmove'],
   preventedListeners: [{
     element: '.select-choice',
     event: 'touchstart'
@@ -147,15 +130,41 @@ passiveSupport({
 ```html
 <!-- With HTML -->
 <script>
-  window.passiveEvents = ['touchstart', 'touchmove', 'mousewheel']
-  window.passivePreventedListeners = [{
-    element: '.select-choice',
-    event: 'touchstart'
-  }]
+  window.passiveSupport = {
+    events: ['touchstart', 'touchmove'],
+    preventedListeners: [{
+      element: '.select-choice',
+      event: 'touchstart'
+    }]
+  }
 </script>
+<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-### 4. Manually marking certain event listeners as passive
+### This code will automatically add the `passive` option with the value of
+
+`false` - for the `touchstart` event listener on `.select-choice` element and
+
+`true` or `false` - for the rest of `touchstart` and `touchmove` event listeners depending on `preventDefault()` call.
+
+### Output
+
+```js
+// The .select-choice element
+const selectChoice = document.querySelector('.select-choice')
+selectChoice.addEventListener('touchmove', handler) // { passive: true }
+selectChoice.addEventListener('touchstart', handler) // { passive: false }
+selectChoice.addEventListener('touchstart', handler, { passive: true }) // { passive: true }
+
+// Any other element
+const anyOtherElement = document.querySelector('.any-other-element')
+anyOtherElement.addEventListener('touchmove', handler) // { passive: true }
+anyOtherElement.addEventListener('touchstart', handler) // { passive: true }
+anyOtherElement.addEventListener('touchstart', handler, { passive: false }) // { passive: false }
+anyOtherElement.addEventListener('touchstart', (e) => { e.preventDefault() }) // { passive: false }
+```
+
+## Doing it manually
 
 In case you want to add `passive` option manually to a certain event listener, use `passiveSupported($debug = false)` helper to find out if `passive` option is even supported by your browser:
 
