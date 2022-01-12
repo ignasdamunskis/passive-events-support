@@ -49,7 +49,9 @@ export function passiveSupport(customEvents = null) {
         fnContent.includes(`(${fnEvent})`) ||
         fnContent.includes(`(${fnEvent},`) ||
         fnContent.includes(`,${fnEvent})`) ||
-        fnContent.includes(`, ${fnEvent})`)
+        fnContent.includes(`, ${fnEvent})`) ||
+        fnContent.includes(`,${fnEvent},`) ||
+        fnContent.includes(`, ${fnEvent},`)
       ))
 
       args[2] = {
