@@ -1,6 +1,27 @@
 # Passive Events Support
 
+- [Introduction](#introduction)
+  - [The Issue](#the-issue)
+  - [What's a passive option?](#whats-a-passive-option)
+  - [Why is it necessary?](#why-is-it-necessary)
+  - [The solution](#the-solution)
+- [How It Works](#how-it-works)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+  - [Configurable Options](#configurable-options)
+    - [Option: debug](#option-debug)
+    - [Option: events](#option-events)
+    - [Option: listeners (Recommended)](#option-listeners-recommended)
+  - [Supported Events](#supported-events)
+  - [Known Issue](#known-events-option-issue)
+- [Browser Support](#browser-support)
+  - [Debugging the browser support](#debugging-the-browser-support)
+  - [Manually assigning the passive option](#manually-assigning-the-passive-option)
+
 ## Introduction
+
+### The Issue
 
 How many times have you yourself forgotten to make an event listener as `passive`, or installed a library such as **Bootstrap**, **jQuery** or **Materialize** and suddenly in the **Google Chrome** you see:
 
@@ -12,9 +33,25 @@ Or when running **Lighthouse** you get a lower score with a message:
 >
 > Consider marking your `touch` and `wheel` event listeners as `passive` to improve your page's scroll performance.
 
-Making event listeners as `passive` manually could be a repetetive and time consuming experience. Also if caused by a 3rd party, modifying its' source code should never be an option!
+### What's a `passive` option?
 
-Here comes the **Passive Events Support**! This is the package that will help you debug the source, solve the issue, but also improve the performance. It is flexible and highly configurable package!
+According to [Official Documentation](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#parameters) a `passive` option is:
+
+> A boolean value that, if true, indicates that the function specified by listener will never call preventDefault(). If a passive listener does call preventDefault(), the user agent will do nothing other than generate a console warning.
+
+### Why is it necessary?
+
+It is well docummented that:
+
+> According to the specification, the default value for the passive option is always false. However, this introduces the potential for event listeners handling certain touch events (among others) to block the browser's main thread while it is attempting to handle scrolling, resulting in possibly enormous reduction in performance during scroll handling.
+
+See [Improving scrolling performance with passive listeners](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#improving_scrolling_performance_with_passive_listeners) to learn more.
+
+### The solution
+
+Making event listeners as `passive` manually could be a repetetive and time consuming experience. Also if caused by a 3rd party, modifying it's source code should never be an option!
+
+Here comes the **Passive Events Support** package! This is the package that will help you debug the source, solve the issue, but also improve the performance. It is flexible and highly configurable package!
 
 ## How it works
 
@@ -64,7 +101,7 @@ passiveSupport({/*...*/})
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-By default, importing this package will not update non-passive event listeners. For this package to act, you must specify which event listeners should be made as passive. See the section below...
+By default, importing this package will not update non-passive event listeners. For this package to act, you must specify which event listeners should be made as passive. See the [Configuration](#configuration) section below.
 
 ## Configuration
 
@@ -80,7 +117,7 @@ It is highly recommended to configure and only pass the custom list of event lis
 
 ### Option: `debug`
 
-When enabled, the event listeners updated by this package will be logged in the console.
+When enabled, the event listeners updated by this package will be console logged.
 
 ```js
 {
@@ -106,9 +143,9 @@ Console output
 
 ### Option: `events`
 
-The list of events whose event listeners will have a `passive` option assigned with the value of `true` or `false` decided by the package.
+The list of events whose event listeners will have a `passive` option assigned with the value of `true` or `false` decided by the package as it is documented in the [How It Works](#how-it-works) section.
 
-Supported Events:
+#### Supported Events:
 
 | Type | Events |
 | --- | --- |
@@ -124,13 +161,13 @@ Supported Events:
 
 Events that are not supported will be ignored.
 
-Known `events` option issue:
+#### Known `events` option issue:
 
 While this option enables the package to assign the correct `passive` option value to all the event listeners for the listed events it also might break certain event listeners. The issue appear when `preventDefault()` is not being called from the handler itself, but rather from the another method called by the handler. In this case this package loses the track of `preventDefault()` and it marks the event listener as passive. This causes the event listener to break prompting an error message:
 
 > Unable to preventDefault inside passive event listener invocation.
 
-Luckilly, this can easilly be debugged in `debug` mode and fixed by the next `listeners` configuration option!
+Luckilly, this can easilly be debugged in `debug` mode and fixed by the `listeners` configuration option!
 
 ### Option: `listeners` (Recommended)
 
@@ -154,6 +191,37 @@ When working altogether with `events` option, this option could be used to fix t
 }
 ```
 
-When `prevented` option is not presented, the package will calculate the `passive` value automatically as it is documented in the **How It Works** section.
+When `prevented` option is not presented, the package will calculate the `passive` value automatically as it is documented in the [How It Works](#how-it-works) section.
 
-Events that are not supported will be ignored.
+Events that are not supported will be ignored. See [supported events](#supported-events) list.
+
+## Browser Support
+
+Even tho the `passive` option is not supported by all the browsers (see [Browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#browser_compatibility)), this package, by default, checks the browser support for `passive` option before assigning it.
+
+### Debugging the browser support
+
+You can yourself access the variable indicating the support:
+
+```js
+// With JS
+import { passiveSupported } from 'passive-events-support/src/utils'
+console.log(passiveSupported())
+```
+
+```html
+<!-- With HTML -->
+<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
+<script>
+  console.log(window.passiveSupported)
+</script>
+```
+
+### Manually assigning the passive option
+
+You, just like this package, yourself can manually add the passive option:
+
+```js
+// use window.passiveSupported if imported with <script>
+element.addEventListener('tocuhstart', handler, passiveSupported() ? { passive: true } : false)
+```
