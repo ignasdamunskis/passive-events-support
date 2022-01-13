@@ -52,70 +52,33 @@ This package must be imported before any package or code that is causing an issu
 
 ```js
 // With JS
-import 'passive-events-support' // or require
-```
-
-```html
-<!-- With HTML -->
-<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
-```
-
-By default, importing this package will automatically add the `passive` options to all the event listeners defined after the import.
-
-### Default event list:
-
-| Type | Events |
-| --- | --- |
-| Scroll | `scroll`, `wheel` |
-| Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
-| Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
-
-While on small projects with no dependencies the default import might work like a charm, on a project with loaded 3rd parties, like **jQuery**, it might cause some of the event listeners break. See the exact issue and how to fix it in the section below.
-
-## Known Issue
-
-This package with its' default behaviour will check if `preventDefault()` is being called by the handler itself and make listener as passive if not. The issue appear when `preventDefault()` is not being called from the handler itself, but rather from the another method called by the handler. In this case we lose the track of `preventDefault()` and we mark the event listener as passive... This causes the event listener to break prompting an error message:
-
-> Unable to preventDefault inside passive event listener invocation.
-
-### **This can be easilly fixed by just configuring the package!**
-
-## Configuration
-
-It is highly recommended to configure and only pass the custom list of events, that seem to trigger the warning, and custom list of prevented event listeners, that should not be marked as passive.
-To do that, you just need to pass the object of configurations:
-
-```js
-// With JS
 import { passiveSupport } from 'passive-events-support/src/utils'
-passiveSupport({
-  debug: false,
-  events: [/*...*/],
-  listeners: []
-})
+passiveSupport({/*...*/})
 ```
 
 ```html
 <!-- With HTML -->
 <script>
-  window.passiveSupport = {
-    debug: false,
-    events: [/*...*/],
-    listeners: []
-  }
+  window.passiveSupport = {/*...*/}
 </script>
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
+
+By default, importing this package will not update non-passive event listeners. For this package to act, you must specify which event listeners should be made as passive. See the section below...
+
+## Configuration
+
+It is highly recommended to configure and only pass the custom list of event listeners, that trigger the console or Lighthouse warning.
 
 ### Configurable Options
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `debug` | `boolean` | `false` |
-| `events` | `array` | All the `scroll`, `touch` and `mouse` events |
+| `events` | `array` | `[]` |
 | `listeners` | `array` | `[]` |
 
-### debug
+### Option: `debug`
 
 When enabled, the event listeners updated by this package will be logged in the console.
 
@@ -141,9 +104,17 @@ Console output
 }
 ```
 
-### events
+### Option: `events`
 
 The list of events whose event listeners will have a `passive` option assigned with the value of `true` or `false` decided by the package.
+
+Supported Events:
+
+| Type | Events |
+| --- | --- |
+| Scroll | `scroll`, `wheel` |
+| Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
+| Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |]
 
 ```js
 {
@@ -151,90 +122,38 @@ The list of events whose event listeners will have a `passive` option assigned w
 }
 ```
 
-When not defined, all the `touch`, `scroll` and `mouse` event listeners will be updated by this package.
+Events that are not supported will be ignored.
 
-### listeners
+Known `events` option issue:
 
-Used to fix the prevented event listeners marked as passive by this package with the call of `preventDefault()` outside of our reach.
+While this option enables the package to assign the correct `passive` option value to all the event listeners for the listed events it also might break certain event listeners. The issue appear when `preventDefault()` is not being called from the handler itself, but rather from the another method called by the handler. In this case this package loses the track of `preventDefault()` and it marks the event listener as passive. This causes the event listener to break prompting an error message:
 
-These event listeners will skip the `passive` value calculations and have a `passive: false` assigned instead. This is exactly what you want for prevented event listeners!
+> Unable to preventDefault inside passive event listener invocation.
+
+Luckilly, this can easilly be debugged in `debug` mode and fixed by the next `listeners` configuration option!
+
+### Option: `listeners` (Recommended)
+
+With this option, instead of certain events, you target certain event listeners.
+
+When working altogether with `events` option, this option could be used to fix the event listeners broken by `events` option.
 
 ```js
 {
-  listeners: [{
-    element: '.select-choice',
-    event: 'touchstart'
-  }]
+  listeners: [
+    {
+      element: '.select-choice',
+      event: 'touchstart',
+      prevented: true // (optional) will force { passive: false }
+    },
+    {
+      element: '.select-choice',
+      event: 'touchmove'
+    }
+  ]
 }
 ```
 
-In case you don't know what event listeners are breaking, the debug mode comes in handy finding out which event listeners were marked as passive.
+When `prevented` option is not presented, the package will calculate the `passive` value automatically as it is documented in the **How It Works** section.
 
-## An Example
-
-```js
-// With JS
-import { passiveSupport } from 'passive-events-support/src/utils'
-passiveSupport({
-  events: ['touchstart', 'touchmove'],
-  listeners: [{
-    element: '.select-choice',
-    event: 'touchstart'
-  }]
-})
-```
-
-```html
-<!-- With HTML -->
-<script>
-  window.passiveSupport = {
-    events: ['touchstart', 'touchmove'],
-    listeners: [{
-      element: '.select-choice',
-      event: 'touchstart'
-    }]
-  }
-</script>
-<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
-```
-
-### This code will automatically add the `passive` option with the value of
-
-`false` - for the `touchstart` event listener on `.select-choice` element and
-
-`true` or `false` - for the rest of `touchstart` and `touchmove` event listeners depending on `preventDefault()` call.
-
-### Output
-
-```js
-// The .select-choice element
-const selectChoice = document.querySelector('.select-choice')
-selectChoice.addEventListener('touchmove', handler) // { passive: true }
-selectChoice.addEventListener('touchstart', handler) // { passive: false }
-selectChoice.addEventListener('touchstart', handler, { passive: true }) // { passive: true }
-
-// Any other element
-const anyOtherElement = document.querySelector('.any-other-element')
-anyOtherElement.addEventListener('touchmove', handler) // { passive: true }
-anyOtherElement.addEventListener('touchstart', handler) // { passive: true }
-anyOtherElement.addEventListener('touchstart', handler, { passive: false }) // { passive: false }
-anyOtherElement.addEventListener('touchstart', (e) => { e.preventDefault() }) // { passive: false }
-```
-
-## Doing it manually
-
-In case you want to add `passive` option manually to a certain event listener, use `passiveSupported($debug = false)` helper to find out if `passive` option is even supported by your browser:
-
-```js
-// With JS
-import { passiveSupported } from 'passive-events-support/src/utils'
-element.addEventListener('touchstart', handler, passiveSupported() ? { passive: true } : false)
-```
-
-```html
-<!-- With HTML -->
-<script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
-<script>
-  element.addEventListener('touchstart', handler, window.passiveSupported ? { passive: true } : false)
-</script>
-```
+Events that are not supported will be ignored.
