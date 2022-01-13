@@ -69,9 +69,10 @@ export function passiveSupport(custom) {
   const originalFn = EventTarget.prototype.addEventListener
 
   EventTarget.prototype.addEventListener = function(...args) {
+    const self = this
     const oldArguments = args[2];
     const isEventFromList = events.includes(args[0])
-    const isListenerFromList = listeners.find(({ element, event }) => this.matches(element) && event === args[0])
+    const isListenerFromList = listeners.find(({ element, event }) => self.matches(element) && event === args[0])
     const noPassiveOption = (!args[2] || args[2].passive === undefined)
 
     if ((isEventFromList || isListenerFromList) && noPassiveOption) {
