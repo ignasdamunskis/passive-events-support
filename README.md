@@ -70,21 +70,20 @@ By default, importing this package will automatically add the `passive` options 
 | Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
 | Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
 
-While on small projects with no dependencies the default import might work like a charm, on a project with loaded 3rd parties, like **jQuery**, it might cause some of the event listeners break. See the exact issue and how to fix it in the sections below.
+While on small projects with no dependencies the default import might work like a charm, on a project with loaded 3rd parties, like **jQuery**, it might cause some of the event listeners break. See the exact issue and how to fix it in the section below.
 
 ## Known Issue
 
-This package with its' default behaviour will check if `preventDefault()` is being called by the handler itself and make listener as passive if not. The issue appear when `preventDefault()` is not being called from the handler itself, but rather from methods called by the handler. This will cause the event listener to break prompting an error message:
+This package with its' default behaviour will check if `preventDefault()` is being called by the handler itself and make listener as passive if not. The issue appear when `preventDefault()` is not being called from the handler itself, but rather from the another method called by the handler. In this case we lose the track of `preventDefault()` and we mark the event listener as passive... This causes the event listener to break prompting an error message:
 
 > Unable to preventDefault inside passive event listener invocation.
 
-**Don't worry!**
-This can be easilly fixed by just customizing the package! See the **Customization** section below.
+### **This can be easilly fixed by just configuring the package!**
 
-## Customization
+## Configuration
 
-It is highly recommended to customize and only pass the custom list of events, that seem to trigger the warning, and custom list of prevented event listeners, that should not be marked as passive.
-To do that, you just need to pass the object eith custom configurations:
+It is highly recommended to configure and only pass the custom list of events, that seem to trigger the warning, and custom list of prevented event listeners, that should not be marked as passive.
+To do that, you just need to pass the object of configurations:
 
 ```js
 // With JS
@@ -92,7 +91,7 @@ import { passiveSupport } from 'passive-events-support/src/utils'
 passiveSupport({
   debug: false,
   events: [/*...*/],
-  preventedListeners: []
+  listeners: []
 })
 ```
 
@@ -102,29 +101,74 @@ passiveSupport({
   window.passiveSupport = {
     debug: false,
     events: [/*...*/],
-    preventedListeners: []
+    listeners: []
   }
 </script>
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
+### Configurable Options
+
 | Option | Type | Default |
 | --- | --- | --- |
 | `debug` | `boolean` | `false` |
-| `events` | `array` | See the **Usage** section above |
-| `preventedListeners` | `array` | `[]` |
+| `events` | `array` | All the `scroll`, `touch` and `mouse` events |
+| `listeners` | `array` | `[]` |
 
 ### debug
 
-This will log the event listeners updated by this package.
+When enabled, the event listeners updated by this package will be logged in the console.
 
-### events - the solution
+```js
+{
+  debug: true
+}
+```
 
-The list of events whose listeners will have a `passive` option assigned.
+Console output
 
-### preventedListeners - the trouble fixer
+```js
+{
+  element: div.some-element
+  event: 'touchstart'
+  handler:
+    fn: ƒ (e)
+    fnArgument: 'e'
+    fnContent: 'console.log(e)'
+    fnPrevented: false
+  oldArguments: false
+  updatedArguments: { passive: true }
+}
+```
 
-The list of prevented event listeners without `passive` option. Here `passive: false` will be applied.
+### events
+
+The list of events whose event listeners will have a `passive` option assigned with the value of `true` or `false` decided by the package.
+
+```js
+{
+  events: ['touchstart', 'touchmove']
+}
+```
+
+When not defined, all the `touch`, `scroll` and `mouse` event listeners will be updated by this package.
+
+### listeners
+
+Used to fix the prevented event listeners marked as passive by this package with the call of `preventDefault()` outside of our reach.
+
+These event listeners will skip the `passive` value calculations and have a `passive: false` assigned instead. This is exactly what you want for prevented event listeners!
+
+```js
+{
+  listeners: [{
+    element: '.select-choice',
+    event: 'touchstart'
+  }]
+}
+```
+
+In case you don't know what event listeners are breaking, the debug mode comes in handy finding out which event listeners were marked as passive.
 
 ## An Example
 
@@ -133,7 +177,7 @@ The list of prevented event listeners without `passive` option. Here `passive: f
 import { passiveSupport } from 'passive-events-support/src/utils'
 passiveSupport({
   events: ['touchstart', 'touchmove'],
-  preventedListeners: [{
+  listeners: [{
     element: '.select-choice',
     event: 'touchstart'
   }]
@@ -145,7 +189,7 @@ passiveSupport({
 <script>
   window.passiveSupport = {
     events: ['touchstart', 'touchmove'],
-    preventedListeners: [{
+    listeners: [{
       element: '.select-choice',
       event: 'touchstart'
     }]

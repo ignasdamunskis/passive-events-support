@@ -21,47 +21,66 @@ export function passiveSupported(debug = false) {
   return passiveSupported
 }
 
+function isEventSupported(event) {
+  return [
+    'scroll',
+    'wheel',
+    'touchstart',
+    'touchmove',
+    'touchenter',
+    'touchend',
+    'touchleave',
+    'mouseout',
+    'mouseleave',
+    'mouseup',
+    'mousedown',
+    'mousemove',
+    'mouseenter',
+    'mousewheel',
+    'mouseover'
+  ].includes(event)
+}
+
 export function passiveSupport(custom) {
   const options = {
-    events: [
-      'scroll',
-      'wheel',
-      'touchstart',
-      'touchmove',
-      'touchenter',
-      'touchend',
-      'touchleave',
-      'mouseout',
-      'mouseleave',
-      'mouseup',
-      'mousedown',
-      'mousemove',
-      'mouseenter',
-      'mousewheel',
-      'mouseover'
-    ],
-    preventedListeners: [],
     debug: false,
+    events: [],
+    listeners: [],
     ...custom
   }
 
   if (options.debug) {
-    console.info('[Passive Events Support] Initialized', options)
+    console.info('[Passive Events Support] Initialized With', options)
+
+    options.events = options.events.filter((event) => {
+      const supported = isEventSupported(event)
+      if (!supported) console.warn(`[Passive Events Support] Unsupported Event: ${event}`)
+      return supported
+    })
+
+    options.listeners = options.listeners.filter((listener) => {
+      const supported = isEventSupported(listener.event)
+      if (!supported) console.warn(`[Passive Events Support] Unsupported Listener:`, listener)
+      return supported
+    })
   }
 
-  const { events, preventedListeners, debug } = options
+  const { debug, events, listeners } = options
   const originalFn = EventTarget.prototype.addEventListener
 
   EventTarget.prototype.addEventListener = function(...args) {
     const oldArguments = args[2];
+    const isEventFromList = events.includes(args[0])
+    const isListenerFromList = listeners.find(({ element, event }) => this.matches(element) && event === args[0])
+    const noPassiveOption = (!args[2] || args[2].passive === undefined)
 
-    if (events.includes(args[0]) && (!args[2] || args[2].passive === undefined)) {
+    if ((isEventFromList || isListenerFromList) && noPassiveOption) {
       const fn = args[1].toString()
       const [fnDeclaration, ...fnContents] = fn.split('{')
       const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
       const fnContent = fnContents.join('{')
       const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
-      const fnPrevented = !!(preventedListeners.find(({ element, event }) => this.matches(element) && event === args[0]) || fnContent.includes('preventDefault'))
+      const fnPrevented = fnContent.includes('preventDefault') || (isListenerFromList && isListenerFromList.prevented)
 
       args[2] = {
         ...(args[2] || {}),
