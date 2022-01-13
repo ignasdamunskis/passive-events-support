@@ -2,7 +2,7 @@
 
 ## Introduction
 
-How many times have you yourself forgotten to make an event listener as `passive`, or installed a library such as **Bootstrap**, **jQuery** or **Materialize** and suddenly in the **Google Chrome** you're prompted with a:
+How many times have you yourself forgotten to make an event listener as `passive`, or installed a library such as **Bootstrap**, **jQuery** or **Materialize** and suddenly in the **Google Chrome** you see:
 
 > **[Violation]** Added non-passive event listener to a scroll-blocking `'touchstart'` event. Consider marking event handler as `passive` to make the page more responsive.
 
@@ -60,7 +60,7 @@ import 'passive-events-support' // or require
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-By default, importing this package will automatically add the `passive` options to all the event listeners defined afterwards.
+By default, importing this package will automatically add the `passive` options to all the event listeners defined after the import.
 
 ### Default event list:
 
@@ -70,7 +70,7 @@ By default, importing this package will automatically add the `passive` options 
 | Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
 | Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |
 
-While on small projects with no dependencies the default import might work like a charm, on a project with loaded 3rd parties, like **jQuery**, it might not work and cause some of the event listeners break. See the exact issues and how to fix it in the sections below.
+While on small projects with no dependencies the default import might work like a charm, on a project with loaded 3rd parties, like **jQuery**, it might cause some of the event listeners break. See the exact issue and how to fix it in the sections below.
 
 ## Known Issue
 
@@ -78,12 +78,13 @@ This package with its' default behaviour will check if `preventDefault()` is bei
 
 > Unable to preventDefault inside passive event listener invocation.
 
-**But don't worry!** This can be debugged and easilly fixed by just configuring the package! See the **Customization** section below.
+**Don't worry!**
+This can be easilly fixed by just customizing the package! See the **Customization** section below.
 
 ## Customization
 
-It is highly recommended to customize and only pass the custom list of events, that seems to trigger the warning, and custom list of prevented event listeners, that should not be marked as passive.
-You can simply do that by passing parameters inside the object:
+It is highly recommended to customize and only pass the custom list of events, that seem to trigger the warning, and custom list of prevented event listeners, that should not be marked as passive.
+To do that, you just need to pass the object eith custom configurations:
 
 ```js
 // With JS
@@ -107,11 +108,23 @@ passiveSupport({
 <script type="text/javascript" src="node_modules/passive-events-support/dist/main.js"></script>
 ```
 
-| Option | Description | Type | Default |
-| --- | --- | --- | --- |
-| `debug` | This will log the event listeners updated by this package. | `boolean` | `false` |
-| `events` | The list of events whose listeners will have a `passive` option assigned. | `array` | See the **Usage** section above |
-| `preventedListeners` | The list of prevented event listeners without `passive` option. Here `passive: false` will be applied. | `array` | `[]` |
+| Option | Type | Default |
+| --- | --- | --- |
+| `debug` | `boolean` | `false` |
+| `events` | `array` | See the **Usage** section above |
+| `preventedListeners` | `array` | `[]` |
+
+### debug
+
+This will log the event listeners updated by this package.
+
+### events - the solution
+
+The list of events whose listeners will have a `passive` option assigned.
+
+### preventedListeners - the trouble fixer
+
+The list of prevented event listeners without `passive` option. Here `passive: false` will be applied.
 
 ## An Example
 
