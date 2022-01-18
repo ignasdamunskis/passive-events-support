@@ -117,7 +117,7 @@ It is highly recommended to configure and only pass the custom list of event lis
 
 ### Option: `debug`
 
-When enabled, the event listeners updated by this package will be console logged.
+When enabled, all the non-passive event listeners will be console logged.
 
 ```js
 {
@@ -139,6 +139,8 @@ Console output
   arguments: false
   updatedArguments: { passive: true }
 ```
+
+The `updatedArguments` parameter will be shown only if the event listener was updated by this package.
 
 ### Option: `events`
 
