@@ -73,6 +73,12 @@ export function passiveSupport(custom) {
     const noPassiveOption = (!args[2] || args[2].passive === undefined)
 
     if (isEventSupported(args[0]) && noPassiveOption) {
+      // check if it should be updated
+      const oldArguments = args[2]
+      const isEventFromList = events.includes(args[0])
+      const isListenerFromList = listeners.find(({ element, event }) => typeof this.matches === 'function' && this.matches(element) && event === args[0])
+      const shouldBeUpdated = isEventFromList || isListenerFromList
+
       // check if it is prevented
       const fn = args[1].toString()
       const [fnDeclaration, ...fnContents] = fn.split('{')
@@ -80,12 +86,6 @@ export function passiveSupport(custom) {
       const fnContent = fnContents.join('{')
       const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
       const fnPrevented = fnContent.includes('preventDefault') || (isListenerFromList && isListenerFromList.prevented)
-
-      // check if it should be updated
-      const oldArguments = args[2]
-      const isEventFromList = events.includes(args[0])
-      const isListenerFromList = listeners.find(({ element, event }) => typeof this.matches === 'function' && this.matches(element) && event === args[0])
-      const shouldBeUpdated = isEventFromList || isListenerFromList
 
       // update arguments
       if (shouldBeUpdated) {
