@@ -128,7 +128,7 @@ When enabled, the event listeners updated by this package will be console logged
 Console output
 
 ```js
-{
+[Passive Events Support] Non-passive Event Listener
   element: div.some-element
   event: 'touchstart'
   handler:
@@ -136,9 +136,8 @@ Console output
     fnArgument: 'e'
     fnContent: 'console.log(e)'
     fnPrevented: false
-  oldArguments: false
+  arguments: false
   updatedArguments: { passive: true }
-}
 ```
 
 ### Option: `events`

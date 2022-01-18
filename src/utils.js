@@ -69,12 +69,12 @@ export function passiveSupport(custom) {
   const originalFn = EventTarget.prototype.addEventListener
 
   EventTarget.prototype.addEventListener = function(...args) {
-    const oldArguments = args[2];
-    const isEventFromList = events.includes(args[0])
-    const isListenerFromList = listeners.find(({ element, event }) => typeof this.matches === 'function' && this.matches(element) && event === args[0])
+    // check if it is non-passive
+    const isEventSupported = isEventSupported(args[0])
     const noPassiveOption = (!args[2] || args[2].passive === undefined)
 
-    if ((isEventFromList || isListenerFromList) && noPassiveOption) {
+    if (isEventSupported && noPassiveOption) {
+      // check if it is prevented
       const fn = args[1].toString()
       const [fnDeclaration, ...fnContents] = fn.split('{')
       const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
@@ -82,13 +82,23 @@ export function passiveSupport(custom) {
       const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
       const fnPrevented = fnContent.includes('preventDefault') || (isListenerFromList && isListenerFromList.prevented)
 
-      args[2] = {
-        ...(args[2] || {}),
-        ...(passiveSupported() && { passive: !fnPrevented })
+      // check if it should be updated
+      const oldArguments = args[2]
+      const isEventFromList = events.includes(args[0])
+      const isListenerFromList = listeners.find(({ element, event }) => typeof this.matches === 'function' && this.matches(element) && event === args[0])
+      const shouldBeUpdated = isEventFromList || isListenerFromList
+
+      // update arguments
+      if (shouldBeUpdated) {
+        args[2] = {
+          ...(args[2] || {}),
+          ...(passiveSupported() && { passive: !fnPrevented })
+        }
       }
 
+      // console log the output
       if (debug) {
-        console.info('[Passive Events Support] Updated Event Listeners', {
+        console.info('[Passive Events Support] Non-passive Event Listener', {
           element: this,
           event: args[0],
           handler: {
@@ -97,8 +107,8 @@ export function passiveSupport(custom) {
             fnContent,
             fnPrevented
           },
-          oldArguments,
-          updatedArguments: args[2]
+          arguments: oldArguments,
+          ...(shouldBeUpdated && { updatedArguments: args[2] })
         })
       }
     }
