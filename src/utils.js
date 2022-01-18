@@ -85,7 +85,7 @@ export function passiveSupport(custom) {
       const fnName = fnDeclaration.replace(/(function|=>)/, '').trim()
       const fnContent = fnContents.join('{')
       const fnArgument = (fnName.match(/\(([^)]+)\)/) || [`(${fnName})`])[0].replace(/[()]/g, '')
-      const fnPrevented = fnContent.includes('preventDefault') || (isListenerFromList && isListenerFromList.prevented)
+      const fnPrevented = !!(fnContent.includes('preventDefault') || (isListenerFromList && isListenerFromList.prevented))
 
       // update arguments
       if (shouldBeUpdated) {
