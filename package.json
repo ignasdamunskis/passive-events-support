@@ -1,6 +1,6 @@
 {
   "name": "passive-events-support",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "Passive Events Support",
   "main": "src/index.js",
   "scripts": {
