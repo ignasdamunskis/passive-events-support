@@ -23,21 +23,13 @@ export function passiveSupported(debug = false) {
 
 function isEventSupported(event) {
   return [
-    'scroll',
-    'wheel',
     'touchstart',
     'touchmove',
     'touchenter',
     'touchend',
     'touchleave',
-    'mouseout',
-    'mouseleave',
-    'mouseup',
-    'mousedown',
-    'mousemove',
-    'mouseenter',
-    'mousewheel',
-    'mouseover'
+    'wheel',
+    'mousewheel'
   ].includes(event)
 }
 

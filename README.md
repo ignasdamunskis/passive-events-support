@@ -150,9 +150,8 @@ The list of events whose event listeners will have a `passive` option assigned w
 
 | Type | Events |
 | --- | --- |
-| Scroll | `scroll`, `wheel` |
 | Touch | `touchstart`, `touchmove`, `touchenter`, `touchend`, `touchleave` |
-| Mouse | `mouseout`, `mouseleave`, `mouseup`, `mousedown`, `mousemove`, `mouseenter`, `mousewheel`, `mouseover` |]
+| Wheel | `wheel`, `mousewheel` |
 
 ```js
 {
