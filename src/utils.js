@@ -70,10 +70,9 @@ export function passiveSupport(custom) {
 
   EventTarget.prototype.addEventListener = function(...args) {
     // check if it is non-passive
-    const isEventSupported = isEventSupported(args[0])
     const noPassiveOption = (!args[2] || args[2].passive === undefined)
 
-    if (isEventSupported && noPassiveOption) {
+    if (isEventSupported(args[0]) && noPassiveOption) {
       // check if it is prevented
       const fn = args[1].toString()
       const [fnDeclaration, ...fnContents] = fn.split('{')
